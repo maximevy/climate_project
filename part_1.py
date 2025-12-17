@@ -1,6 +1,7 @@
 import numpy as np
 from scipy.integrate import solve_ivp
 import matplotlib.pyplot as plt
+from matplotlib.lines import Line2D
 
 """
 We solve the equations 1 and 2 of the assignment and reproduce the figures 1a, 1d, 2a and 2b 
@@ -27,17 +28,21 @@ def N_T(a, b, c, start, stop, steps):
     return [y, roots]
 
 def plot_1a(): # plots figure 1a of the paper 
+    # Data
     x = np.linspace(285, 297, 100)
     linear = N_T(0, lmbda, F2x, 285, 297, 100)
+    print(linear[1])
     f_c = N_T(ac, lmbda, F2x, 285, 297, 100)
+    print(f_c[1])
     f_m = N_T(am, lmbda, F2x, 285, 297, 100) 
     f_h = N_T(ah, lmbda, F2x, 285, 297, 100)
     
+    # Plotting
     fig, ax = plt.subplots()
-    ax.plot(x, linear[0], linestyle = "--", color = "k")
-    ax.plot(x, f_c[0], color = "b")
-    ax.plot(x, f_m[0], color = "g")
-    ax.plot(x, f_h[0], color = "r")
+    ax.plot(x, linear[0], linestyle = "--", color = "k", label = f"linear, $\Delta T_{{2x}}={linear[1][0]:.1f}K$")
+    ax.plot(x, f_c[0], color = "b", label = f"$a_C = -0.035, \Delta T_{{2x}} = {f_c[1][1]:.1f}K$")
+    ax.plot(x, f_m[0], color = "g", label = f"$a_M = 0.03, \Delta T_{{2x}}= {f_m[1][1]:.1f}K$")
+    ax.plot(x, f_h[0], color = "r", label = r"$a_H=0.058, \Delta T_{{2x}}= ? $")
     
     # plot slope of lambda
     xmin, xmax = 286, 288
@@ -45,22 +50,43 @@ def plot_1a(): # plots figure 1a of the paper
     ax.plot(x[mask], linear[0][mask], color = "m")
     ax.text(287, 4, r"$\lambda$", color = "m")
     
-    # text and annotations 
-    ax.text(286.75, -0.7, r"$T_0$")
+    # text and arrows 
+    ax.text(286.75, -0.7, r"$T_0$") # T0
+    ax.text(289, -0.8, r"$\Delta T_{2x}$", ha = "center") # DT2X
+    ax.text(286.4, 2, r"$F_{2x}$")
+    ax.annotate( # Delta T2x left to right arrow
+    '',                      # empty string → just arrow
+    xy=(f_c[1][1]+T0, -0.2),               # arrow tip
+    xytext=(287.1, -0.2),           # arrow tail
+    arrowprops=dict(facecolor='blue', arrowstyle='->', lw=1)
+)
+    ax.annotate("", xy = (T0, 3.7), xytext = (T0, 0.2), 
+                arrowprops = dict(facecolor = "red", arrowstyle="->", lw=1))
 
-    
+
+    # labels 
     ax.set_xlabel("T (K)")
     ax.set_ylabel("N (W/m²)")
     ax.set_title("Figure 1a")
     
+    # axis limits
     ax.set_ylim(-2, 8)
     ax.set_xlim(285, 297)
     
+    # ticks 
     ax.set_xticks([285, 287, 289, 291, 293, 295, 297]) # set ticks 
     ax.axhline(0, color = "k") # add horizontal line at y=0 
     for xi in [linear[1][-1], f_c[1][-1], f_m[1][-1]]: # add markers at roots on horizontal line 
         ax.plot([xi + T0, xi + T0], [-0.15, 0.15], color='k')
         ax.plot([287, 287], [-0.15, 0.15], color = "k")
+
+    # legend
+    handles, labels = ax.get_legend_handles_labels()
+    #print(handles, labels)
+    proxy = Line2D([0], [0], color = "none", linestyle="")
+    handles.insert(0, proxy)
+    labels.insert(0, r"$\lambda=-0.88\ W/m^2/K$")
+    ax.legend(handles, labels)
     
     plt.tight_layout()
     plt.show()
@@ -93,6 +119,7 @@ F = 2 #forcing [W*m**(-2)]
 #     return dT
 
 
+
 # sol = solve_ivp(fun = dT_basic, t_span = t_tot, y0 = [T0], t_eval = np.linspace(*t_tot, 20000))
 
 
@@ -100,6 +127,13 @@ F = 2 #forcing [W*m**(-2)]
 # plt.title(f"Time series of the increase in global annual mean surface temperature with a forcing of F = {F}")
 # plt.xlabel("Time [years]")
 # plt.ylabel("Temperature difference [K]")
+
+"""
+plt.plot(sol.t/(365*24*60*60), sol.y[0])
+plt.title(f"Time series of the increase in global annual mean surface temperature with a forcing of F = {F}")
+plt.xlabel("Time [years]")
+plt.ylabel("Temperature difference [K]")
+"""
 
 
 
