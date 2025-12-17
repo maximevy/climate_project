@@ -3,12 +3,14 @@ from scipy.integrate import solve_ivp
 import matplotlib.pyplot as plt
 import random
 
-t_year = 200
+# plt.close('all')
+
+t_year = 20000
 t_sec = t_year*365*24*60*60 
 t_tot = (0, t_sec) #Important : find the true timescales for computation
 
 T0 = 0  #initial temperature condition [K]
-F = 1.5 #forcing [W*m**(-2)]
+F = 2 #forcing [W*m**(-2)]
 
 # temp increase diff equation with fifth order and noise
 
@@ -23,29 +25,43 @@ def dT_stoch(t, T):
     beta = - 4*10**(-6) # [W/m**2/K] 
     lbda = - 0.88 #the slope of the top-of-atm flux N [W/m**2/K] 
     c = 8.36*10**8 #J*K**(-1)*m**(-2)
-    noise = random.gauss(0, 40) #normal is 10
-    dT = 1/c*(F + lbda*T + alpha*T**2 + beta*T**5 + noise)
+    noise = random.gauss(0, 10) #normal is 10
+    dT = 1/c*(F + lbda*T + alpha*T**2 + beta*T**5 )# noise)
     return dT
 
 
 
-# sol = solve_ivp(fun = dT_stoch, t_span = t_tot, y0 = [T0], t_eval = np.linspace(*t_tot, 20000))
+sol = solve_ivp(fun = dT_stoch, t_span = t_tot, y0 = [T0], t_eval = np.linspace(*t_tot, 20000))
+
+plt.figure()
+plt.plot(sol.t/(365*24*60*60), sol.y[0])
+plt.title(f"Time series of the increase in global annual mean surface temperature with a forcing of F = {F}")
+plt.xlabel("Time [years]")
+plt.ylabel("Temperature difference [K]")
+plt.show()
+
+dT_real = dT_stoch(sol.t, sol.y[0])
+# print(dT_real)
+# print(dT_real*8.36*10**8)
+
+plt.figure()
+plt.grid()
+plt.plot(273.15 + sol.y[0], dT_real*8.36*10**8)
+plt.show()
 
 
-# plt.plot(sol.t/(365*24*60*60), sol.y[0])
-# plt.title(f"Time series of the increase in global annual mean surface temperature with a forcing of F = {F}")
-# plt.xlabel("Time [years]")
-# plt.ylabel("Temperature difference [K]")
 
-#plot of 20 different solutions
-i = 0
-while i < 20:
-    sol = solve_ivp(fun = dT_stoch, t_span = t_tot, y0 = [T0], t_eval = np.linspace(*t_tot, 20000))
-    plt.plot(sol.t/(365*24*60*60), sol.y[0])
-    plt.title(f"Time series of the increase in global annual mean surface temperature with a forcing of F = {F}")
-    plt.xlabel("Time [years]")
-    plt.ylabel("Temperature difference [K]")
-    i += 1
+
+# plot of 20 different solutions
+
+# i = 0
+# while i < 20:
+#     sol = solve_ivp(fun = dT_stoch, t_span = t_tot, y0 = [T0], t_eval = np.linspace(*t_tot, 20000))
+#     plt.plot(sol.t/(365*24*60*60), sol.y[0])
+#     plt.title(f"Time series of the increase in global annual mean surface temperature with a forcing of F = {F}")
+#     plt.xlabel("Time [years]")
+#     plt.ylabel("Temperature difference [K]")
+#     i += 1
 
 
 #Important thing to notice. System is nonlinear. When forcing around 3.5
