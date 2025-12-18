@@ -88,7 +88,7 @@ def fig_1a(): # plots figure 1a of the paper
     plt.tight_layout()
     plt.show()
  
-#fig_1a()
+fig_1a()
 
 # figure 1d
 lmbda = -1.28
@@ -159,44 +159,100 @@ def delta_T_vs_a(lmbda, n):
     
     Parameters
     ----------
-    lmbda : TYPE
-        DESCRIPTION.
-    n : TYPE
-        DESCRIPTION.
+    lmbda : feedback paramater.
+    n : Number of CO2 doublings.
 
     Returns
     -------
-    delta_T : TYPE
-        DESCRIPTION.
+    delta_T : list of values of delta_T.
 
     """
     F = Fnx(n)
     delta_T = []
-    a_values = np.linspace(-0.10, 0.10, 100)
+    a_values = np.linspace(-0.1, 0.1, 400)
     for a in a_values:
         root = np.roots([a, lmbda, F])[-1]
         if isinstance(root, (int, float)):
             delta_T.append(root)
         else: 
-            delta_T.append(False)
+            delta_T.append(np.nan)
     return delta_T
 
-delta_T_2x_vs_a_max = delta_T_vs_a(-0.79, 2)
-delta_T_2x_vs_a_mean = delta_T_vs_a(-1.17, 2)
-delta_T_2x_vs_a_min = delta_T_vs_a(-1.78, 2)
-delta_T_2x_vs_a_0 = delta_T_vs_a(0, 2)
 
 
-       
+def fig_2a():
+    # data 
+    x = np.linspace(-0.1, 0.1, 400)
+    delta_T_2x_vs_a_max = delta_T_vs_a(-0.79, 2)
+    delta_T_2x_vs_a_mean = delta_T_vs_a(-1.17, 2)
+    delta_T_2x_vs_a_min = delta_T_vs_a(-1.78, 2)
+    delta_T_2x_vs_a_0 = delta_T_vs_a(-1*(10**-20), 2)
     
+    # plotting 
+    fig, ax = plt.subplots()
+    ax.plot(x, delta_T_2x_vs_a_0, color="k", label=r"$\lambda = 0\ W/m^2/K$")
+    ax.plot(x, delta_T_2x_vs_a_max, color="m", label=r"$\lambda_{max} = -0.79$")
+    ax.plot(x, delta_T_2x_vs_a_mean, color="g", label=r"$\lambda_{mean} = -1.17$")
+    ax.plot(x, delta_T_2x_vs_a_min, color="C1", label=r"$\lambda_{min} = -1.78$")
     
+    # limits
+    ax.set_ylim(0, 10)
+    
+    # labels
+    ax.set_ylabel(r"$\Delta T_{2x}(K)$")
+    ax.set_xlabel(r"$a\ (W/m^2/K^2)$")
+    ax.set_title(r"$2xCO_2$")
+    
+    # ticks
+    ax.set_xticks([-0.10, -0.05, 0.00, 0.05, 0.10])
+    
+    ax.axvline(x=0, color="k", lw=0.5)
+    
+    # legend
+    ax.legend()
+    
+    plt.tight_layout()
+    plt.show()
+    
+fig_2a()
 
-
-
-
-
-
-
+def fig_2b():
+    # data 
+    x = np.linspace(-0.1, 0.1, 400)
+    delta_T_4x_vs_a_max = delta_T_vs_a(-0.79, 4)
+    delta_T_4x_vs_a_mean = delta_T_vs_a(-1.17, 4)
+    delta_T_4x_vs_a_min = delta_T_vs_a(-1.78, 4)
+    delta_T_4x_vs_a_0 = delta_T_vs_a(-1*(10**-20), 4)
+    
+    # plotting 
+    fig, ax = plt.subplots()
+    ax.plot(x, delta_T_4x_vs_a_0, color="k", label=r"$\lambda = 0\ W/m^2/K$")
+    ax.plot(x, delta_T_4x_vs_a_max, color="m", label=r"$\lambda_{max} = -0.79$")
+    ax.plot(x, delta_T_4x_vs_a_mean, color="g", label=r"$\lambda_{mean} = -1.17$")
+    ax.plot(x, delta_T_4x_vs_a_min, color="C1", label=r"$\lambda_{min} = -1.78$")
+    
+    # limits
+    ax.set_ylim(0, 20)
+    
+    # labels
+    ax.set_ylabel(r"$\Delta T_{4x}(K)$")
+    ax.set_xlabel(r"$a\ (W/m^2/K^2)$")
+    ax.set_title(r"$4xCO_2$")
+    
+    # ticks
+    ax.set_xticks([-0.10, -0.05, 0.00, 0.05, 0.10])
+    ax.set_yticks([0, 5, 10, 15, 20])
+    
+    ax.axvline(x=0, color="k", lw=0.5)
+    
+    # legend
+    ax.legend()
+    
+    plt.tight_layout()
+    plt.show()
+    
+fig_2b()
+         
 
 # temp increase diff equation without fifth order and noise
 
@@ -235,8 +291,3 @@ plt.title(f"Time series of the increase in global annual mean surface temperatur
 plt.xlabel("Time [years]")
 plt.ylabel("Temperature difference [K]")
 """
-
-
-
-
-
