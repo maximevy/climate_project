@@ -9,32 +9,38 @@ of Bloch-Johnson et al. (2015)
 """
 
 # Constants 
-F2x = 3.71
+F2X = 3.71
 T0 = 287
 
-def Fnx(n):
+def Fnx(n): 
+    """ Gives the radiative forcing for a nx increase of the C02 concentration
+    in the atmosphere
+    """
     return np.log2(n)*3.71
 
 # Figure 1a 
-lmbda = -0.88
-ac = -0.035
-am = 0.03
-ah = 0.058
-
-
 def N_T(a, b, c, start, stop, steps):
+    """ Solves equation 1 in the paper and returns N as a function of T and
+    the roots (Delta_T)
+    """
     x = np.linspace(start - T0, stop - T0, num=steps)
-    y = a*x**2 + lmbda*x + c
+    y = a*x**2 + b*x + c
     roots = np.roots([a, b, c])
     return [y, roots]
 
-def fig_1a(): # plots figure 1a of the paper 
+def fig_1a(): 
+    """ Generates figure 1a of the paper 
+    """
     # Data
+    lmbda = -0.88 # feedback parameter 
+    ac = -0.035   # feedback temperature dependence parameter
+    am = 0.03
+    ah = 0.058
     x = np.linspace(285, 297, 100)
-    linear = N_T(0, lmbda, F2x, 285, 297, 100)
-    f_c = N_T(ac, lmbda, F2x, 285, 297, 100)
-    f_m = N_T(am, lmbda, F2x, 285, 297, 100) 
-    f_h = N_T(ah, lmbda, F2x, 285, 297, 100)
+    linear = N_T(0, lmbda, F2X, 285, 297, 100)
+    f_c = N_T(ac, lmbda, F2X, 285, 297, 100)
+    f_m = N_T(am, lmbda, F2X, 285, 297, 100) 
+    f_h = N_T(ah, lmbda, F2X, 285, 297, 100)
     
     # Plotting
     fig, ax = plt.subplots()
@@ -46,7 +52,7 @@ def fig_1a(): # plots figure 1a of the paper
     # plot slope of lambda
     xmin, xmax = 286.25, 287.75
     mask = (x >= xmin) & (x <= xmax)
-    ax.plot(x[mask], linear[0][mask], color = "magenta")
+    ax.plot(x[mask], linear[0][mask], color = "magenta", lw=2.5)
     ax.text(287, 4, r"$\lambda$", color = "magenta")
     
     # text and arrows 
@@ -60,12 +66,13 @@ def fig_1a(): # plots figure 1a of the paper
     arrowprops=dict(facecolor='blue', arrowstyle='->', lw=1)
 )
     ax.annotate("", xy = (T0, 3.7), xytext = (T0, 0.2), 
-                arrowprops = dict(facecolor = "red", arrowstyle="->", lw=1))
+                arrowprops = dict(facecolor = "red", arrowstyle="->", lw=1)
+)
 
     # labels 
     ax.set_xlabel("T (K)")
     ax.set_ylabel("N (W/m²)")
-    ax.set_title("Figure 1a")
+    #ax.set_title("Figure 1a")
     
     # axis limits
     ax.set_ylim(-2, 8)
@@ -87,19 +94,19 @@ def fig_1a(): # plots figure 1a of the paper
     
     plt.tight_layout()
     plt.show()
- 
-fig_1a()
+
 
 # figure 1d
-lmbda = -1.28
-a_h = 0.058
-F4x = Fnx(4)
-
 def fig_1d():
+    """ generates figure 1d from the paper 
+    """
     # data 
+    lmbda = -1.28 # feedback parameter
+    a_h = 0.058 # feedback temperature difference parameter
+    F4x = Fnx(4) # radiative forcing for 4x CO2 increase
     x = np.linspace(286, 300, 100)
-    lin_2x = N_T(0, lmbda, F2x, 286, 300, 100)
-    quad_2x = N_T(a_h, lmbda, F2x, 286, 300, 100)
+    lin_2x = N_T(0, lmbda, F2X, 286, 300, 100)
+    quad_2x = N_T(a_h, lmbda, F2X, 286, 300, 100)
     lin_4x = N_T(0, lmbda, F4x, 286, 300, 100)
     quad_4x = N_T(a_h, lmbda, F4x, 286, 300, 100)
     linF1 = N_T(0, lmbda, 0.5, 286, 300, 100)
@@ -126,7 +133,7 @@ def fig_1d():
     # labels 
     ax.set_xlabel("T (K)")
     ax.set_ylabel("N (W/m²)")
-    ax.set_title("Figure 1d")
+    #ax.set_title("Figure 1d")
     
     # annotations 
     ax.axhline(0, color = "k") # add horizontal line at y=0 
@@ -149,10 +156,8 @@ def fig_1d():
     plt.tight_layout()
     plt.show()
         
-fig_1d()
 
-# figure 2 
-# 2a
+# figure 2
 def delta_T_vs_a(lmbda, n):
     """
     Delta T as a function of values of a, for a given lambda and CO2 increase
@@ -172,15 +177,16 @@ def delta_T_vs_a(lmbda, n):
     a_values = np.linspace(-0.1, 0.1, 400)
     for a in a_values:
         root = np.roots([a, lmbda, F])[-1]
-        if isinstance(root, (int, float)):
-            delta_T.append(root)
-        else: 
+        if isinstance(root, (int, float)): # replace complex values with NaN
+            delta_T.append(root)           # because it means we reached 
+        else:                              # runaway warming  
             delta_T.append(np.nan)
     return delta_T
 
-
-
+# figure 2a
 def fig_2a():
+    """ generates figure 2a from the paper
+    """
     # data 
     x = np.linspace(-0.1, 0.1, 400)
     delta_T_2x_vs_a_max = delta_T_vs_a(-0.79, 2)
@@ -206,17 +212,19 @@ def fig_2a():
     # ticks
     ax.set_xticks([-0.10, -0.05, 0.00, 0.05, 0.10])
     
-    ax.axvline(x=0, color="k", lw=0.5)
+    ax.axvline(x=0, color="k", lw=0.5) # vertical line at a = 0 
     
     # legend
     ax.legend()
     
     plt.tight_layout()
     plt.show()
-    
-fig_2a()
 
+
+# figure 2b 
 def fig_2b():
+    """ generates figure 2b from the paper 
+    """
     # data 
     x = np.linspace(-0.1, 0.1, 400)
     delta_T_4x_vs_a_max = delta_T_vs_a(-0.79, 4)
@@ -243,19 +251,22 @@ def fig_2b():
     ax.set_xticks([-0.10, -0.05, 0.00, 0.05, 0.10])
     ax.set_yticks([0, 5, 10, 15, 20])
     
-    ax.axvline(x=0, color="k", lw=0.5)
+    ax.axvline(x=0, color="k", lw=0.5) # vertical line at a=0
     
     # legend
     ax.legend()
     
     plt.tight_layout()
     plt.show()
-    
+
+
+# call the figure functions to plot them
+fig_1a()
+fig_1d()
+fig_2a()
 fig_2b()
-         
 
 # temp increase diff equation without fifth order and noise
-
 t_year = 200
 t_sec = t_year*365*24*60*60 
 t_tot = (0, t_sec) #Important : find the true timescales for computation
