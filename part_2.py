@@ -5,12 +5,12 @@ import random
 
 plt.close('all')
 
-t_year = 2000 #total time of experiment [years]
+t_year = 200 #total time of experiment [years]
 t_sec = t_year*365*24*60*60 
 t_tot = (0, t_sec) 
 
 T0 = 0  #initial temperature increase condition [C]
-F = 3.38 #forcing [W*m**(-2)]
+F = 10 #forcing [W*m**(-2)]
 
 
 
@@ -57,12 +57,35 @@ def dT_flux_plot():
     plt.figure()
     plt.plot(T_range, net_flux, label='Net Flux $N$')
     plt.axhline(0, color='black', linestyle='--') 
-    plt.title("Net Energy Flux vs. Temperature Increase")
+    # plt.title("The energy Flux against the temperature increase")
     plt.xlabel("Temperature Increase [K]")
     plt.ylabel("Net Flux [W $m^{-2}$]")
     plt.grid()
     plt.show()
 
+#first plot in report
+
+# fig, ax = plt.subplots()
+
+# F = 2
+# sol = solve_ivp(fun = dT, t_span = t_tot, y0 = [T0], t_eval = np.linspace(*t_tot, 20000))
+# ax.plot(sol.t/(365*24*60*60), sol.y[0], label = r"F = 2 $W/m^2$")
+
+# F = 10
+# sol = solve_ivp(fun = dT, t_span = t_tot, y0 = [T0], t_eval = np.linspace(*t_tot, 20000))
+# ax.plot(sol.t/(365*24*60*60), sol.y[0], label = r"F = 10 $W/m^2$")
+
+# F = 20
+# sol = solve_ivp(fun = dT, t_span = t_tot, y0 = [T0], t_eval = np.linspace(*t_tot, 20000))
+# ax.plot(sol.t/(365*24*60*60), sol.y[0], label = r"F = 20 $W/m^2$")
+
+# # ax.set_title("Times series of the temperature increase for differents forcings")
+# ax.set_xlabel("Temperature Increase [K]")
+# ax.set_ylabel("Time [year]")
+# ax.legend()
+# plt.show()
+
+#second plot in report
 
 
 #temperature increase differential equation with fifth order term and noise
@@ -76,7 +99,7 @@ def dT_stoch(t, T):
     beta = - 4*10**(-6) #reequilibration term [W*m**(-2)K**(-5)] 
     lbda = - 0.88 #the slope of the top-of-atm flux N [W*m**(-2)*K**(-1)] 
     c = 8.36*10**8 #heat capacity [J*K**(-1)*m**(-2)]
-    noise = random.gauss(0, 100) #ideal value for the std is 10
+    noise = random.gauss(0, 10) #ideal value for the std is 10
     dT = 1/c*(F + lbda*T + alpha*T**2 + beta*T**5 + noise)
     return dT
 
@@ -131,9 +154,9 @@ def dT_stoch_plot20():
     
 # dT_plot()
 # dT_stoch_plot()
-# dT_flux_plot()
+dT_flux_plot()
 # dT_stoch_plot2()
-dT_stoch_plot20()
+# dT_stoch_plot20()
 
 
 
