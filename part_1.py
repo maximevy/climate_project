@@ -281,7 +281,7 @@ F = 2 #forcing [W*m**(-2)]
 def dT_basic(t, T):
    '''
    Expression of the derivative of the global annual mean of surface temperature
-   caused by the radiative forcing.
+   caused by the radiative forcing. Fifth order not included. Noise not included.
    '''
    alpha = 0.058 #the feedback temperature dependence [W/m**2/K] 
    #beta = - 4*10**(-6) # [W/m**2/K] 
