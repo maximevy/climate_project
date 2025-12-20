@@ -32,15 +32,15 @@ def fig_1a():
     """ Generates figure 1a of the paper 
     """
     # Data
-    lmbda = -0.88 # feedback parameter 
+    lbda = -0.88 # feedback parameter 
     ac = -0.035   # feedback temperature dependence parameter
     am = 0.03
     ah = 0.058
     x = np.linspace(285, 297, 100)
-    linear = N_T(0, lmbda, F2X, 285, 297, 100)
-    f_c = N_T(ac, lmbda, F2X, 285, 297, 100)
-    f_m = N_T(am, lmbda, F2X, 285, 297, 100) 
-    f_h = N_T(ah, lmbda, F2X, 285, 297, 100)
+    linear = N_T(0, lbda, F2X, 285, 297, 100)
+    f_c = N_T(ac, lbda, F2X, 285, 297, 100)
+    f_m = N_T(am, lbda, F2X, 285, 297, 100) 
+    f_h = N_T(ah, lbda, F2X, 285, 297, 100)
     
     # Plotting
     fig, ax = plt.subplots()
@@ -102,18 +102,18 @@ def fig_1d():
     """ generates figure 1d from the paper 
     """
     # data 
-    lmbda = -1.28 # feedback parameter
+    lbda = -1.28 # feedback parameter
     a_h = 0.058 # feedback temperature difference parameter
     F4x = Fnx(4) # radiative forcing for 4x CO2 increase
     x = np.linspace(286, 300, 100)
-    lin_2x = N_T(0, lmbda, F2X, 286, 300, 100)
-    quad_2x = N_T(a_h, lmbda, F2X, 286, 300, 100)
-    lin_4x = N_T(0, lmbda, F4x, 286, 300, 100)
-    quad_4x = N_T(a_h, lmbda, F4x, 286, 300, 100)
-    linF1 = N_T(0, lmbda, 0.5, 286, 300, 100)
-    quadF1 = N_T(a_h, lmbda, 0.5, 286, 300, 100)
-    linF2 = N_T(0, lmbda, 2, 286, 300, 100)
-    quadF2 = N_T(a_h, lmbda, 2, 286, 300, 100)  
+    lin_2x = N_T(0, lbda, F2X, 286, 300, 100)
+    quad_2x = N_T(a_h, lbda, F2X, 286, 300, 100)
+    lin_4x = N_T(0, lbda, F4x, 286, 300, 100)
+    quad_4x = N_T(a_h, lbda, F4x, 286, 300, 100)
+    linF1 = N_T(0, lbda, 0.5, 286, 300, 100)
+    quadF1 = N_T(a_h, lbda, 0.5, 286, 300, 100)
+    linF2 = N_T(0, lbda, 2, 286, 300, 100)
+    quadF2 = N_T(a_h, lbda, 2, 286, 300, 100)  
     
     # plotting
     fig, ax = plt.subplots()
@@ -160,13 +160,13 @@ def fig_1d():
         
 
 # figure 2
-def delta_T_vs_a(lmbda, n):
+def delta_T_vs_a(lbda, n):
     """
     Delta T as a function of values of a, for a given lambda and CO2 increase
     
     Parameters
     ----------
-    lmbda : feedback paramater.
+    lbda : feedback paramater.
     n : Number of CO2 doublings.
 
     Returns
@@ -178,7 +178,7 @@ def delta_T_vs_a(lmbda, n):
     delta_T = []
     a_values = np.linspace(-0.1, 0.1, 400)
     for a in a_values:
-        root = np.roots([a, lmbda, F])[-1]
+        root = np.roots([a, lbda, F])[-1]
         if isinstance(root, (int, float)): # replace complex values with NaN
             delta_T.append(root)           # because it means we reached 
         else:                              # runaway warming  
@@ -272,28 +272,95 @@ def fig_2b():
 
 # temp increase diff equation without fifth order and noise
 t_year = 200
-t_sec = t_year*365*24*60*60 
-t_tot = (0, t_sec) #Important : find the true timescales for computation
+t_sec = t_year * 365 * 24 * 60 * 60 
+t_tot = (0, t_sec) 
+Delta_T_0 = 0  #initial temperature condition
 
-T0 = 0  #initial temperature condition
-F = 2 #forcing [W*m**(-2)]
-
-def dT_basic(t, T):
+def dT_basic(t, T, alpha, lbda, F):
    '''
-   Expression of the derivative of the global annual mean of surface temperature
-   caused by the radiative forcing. Fifth order not included. Noise not included.
+   Expression of the derivative of the global annual mean of surface
+   temperature caused by the radiative forcing. Fifth order not included.
+   Noise not included.
+   
+   Parameters:
+    - t: time (required by solve_ivp)
+    - T: temperature array
+    - alpha: quadratic feedback parameter
+    - lbda: linear feedback parameter
+    - F: radiative forcing
+   
    '''
-   alpha = 0.058 #the feedback temperature dependence [W/m**2/K] 
-   #beta = - 4*10**(-6) # [W/m**2/K] 
-   lbda = - 0.88 #the slope of the top-of-atm flux N [W/m**2/K] 
-   c = 8.36*10**8 #J*K**(-1)*m**(-2)
-   dT = 1/c*(F + lbda*T + alpha*T**2)
-   return dT
+   C = 8.36e8  # J*K**(-1)*m**(-2)
+   dT = 1/C * (F + lbda*T[0] + alpha*T[0]**2)
+   return [dT]
 
 
-sol = solve_ivp(fun = dT_basic, t_span = t_tot, y0 = [T0], t_eval = np.linspace(*t_tot, 20000))
+def plot_transient_behaviour():
+    # Solve ODE
+    sol_F2x_lbda1_alphac = solve_ivp(
+        fun=lambda t, T: dT_basic(t, T, alpha=-0.035, lbda=-0.88, F=Fnx(2)),
+        t_span=t_tot, 
+        y0=[Delta_T_0],
+        t_eval=np.linspace(*t_tot, 20000)
+    )
+    sol_F2x_lbda1_alpham = solve_ivp(
+        fun=lambda t, T: dT_basic(t, T, alpha=0.03, lbda=-0.88, F=Fnx(2)),
+        t_span=t_tot, 
+        y0=[Delta_T_0],
+        t_eval=np.linspace(*t_tot, 20000)
+    )
+    sol_F2x_lbda1_alphah = solve_ivp(
+        fun=lambda t, T: dT_basic(t, T, alpha=0.058, lbda=-0.88, F=Fnx(2)),
+        t_span=t_tot, 
+        y0=[Delta_T_0],
+        t_eval=np.linspace(*t_tot, 20000)
+    )
+    sol_F2x_lbda2_alphah = solve_ivp(
+        fun=lambda t, T: dT_basic(t, T, alpha=.058, lbda=-1.28, F=Fnx(2)),
+        t_span=t_tot, 
+        y0=[Delta_T_0],
+        t_eval=np.linspace(*t_tot, 20000)
+    )
+    sol_F4x_lbda2_alphah = solve_ivp(
+        fun=lambda t, T: dT_basic(t, T, alpha=.058, lbda=-1.28, F=Fnx(4)),
+        t_span=t_tot, 
+        y0=[Delta_T_0],
+        t_eval=np.linspace(*t_tot, 20000)
+    )
+    
+    # Plotting 
+    fig, ax = plt.subplots()
+    divider = 365 * 24 * 60 * 60
+    ax.plot(sol_F2x_lbda1_alphac.t / divider,
+            sol_F2x_lbda1_alphac.y[0],
+            label=r"$2xCO_2,\ \lambda = -0.88,\ a_C = -0.035$"
+            )
+    ax.plot(sol_F2x_lbda1_alpham.t / divider,
+            sol_F2x_lbda1_alpham.y[0],
+            label=r"$2xCO_2,\ \lambda = -0.88,\ a_M = 0.03$"
+            )
+    ax.plot(sol_F2x_lbda1_alphah.t / divider,
+            sol_F2x_lbda1_alphah.y[0],
+            label=r"$2xCO_2,\ \lambda = -0.88,\ a_H = 0.058$"
+            )
+    ax.plot(sol_F2x_lbda2_alphah.t / divider,
+            sol_F2x_lbda2_alphah.y[0],
+            label=r"$2xCO_2,\ \lambda = -1.28,\ a_H = 0.058$"
+            )
+    ax.plot(sol_F4x_lbda2_alphah.t / divider,
+            sol_F4x_lbda2_alphah.y[0],
+            label=r"$4xCO_2,\ \lambda = -1.28,\ a_H = 0.058$")
+    
+    # Labels
+    ax.set_xlabel("Time (years)")
+    ax.set_ylabel("Temperature change (K)")
+    #ax.set_title("Time series of global annual mean surface temperature increase")
+    
+    # legend
+    ax.legend()
+    
+    plt.tight_layout()
+    plt.show()
+    
 
-plt.plot(sol.t/(365*24*60*60), sol.y[0])
-plt.title(f"Time series of the increase in global annual mean surface temperature with a forcing of F = {F}")
-plt.xlabel("Time [years]")
-plt.ylabel("Temperature difference [K]")
+plot_transient_behaviour()
