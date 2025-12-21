@@ -1,11 +1,11 @@
 import numpy as np
-from scipy.integrate import solve_ivp
 import matplotlib.pyplot as plt
+from scipy.integrate import solve_ivp
 from matplotlib.lines import Line2D
 
 """
-We solve the equations 1 and 2 of the assignment and reproduce the figures 1a, 1d, 2a and 2b 
-of Bloch-Johnson et al. (2015)
+We solve the equations 1 and 2 of the assignment and reproduce the figures
+1a, 1d, 2a and 2b of Bloch-Johnson et al. (2015)
 """
 
 # Constants 
@@ -13,15 +13,15 @@ F2X = 3.71
 T0 = 287
 
 def Fnx(n): 
-    """ Gives the radiative forcing for a nx increase of the C02 concentration
-    in the atmosphere
+    """ Return the radiative forcing for a nx increase of the C02 concentration
+    in the atmosphere.
     """
     return np.log2(n)*3.71
 
 # Figure 1a 
 def N_T(a, b, c, start, stop, steps):
-    """ Solves equation 1 in the paper and returns N as a function of T and
-    the roots (Delta_T)
+    """ Solve equation 1 in the paper and return N as a function of T and
+    the roots (Delta_T).
     """
     x = np.linspace(start - T0, stop - T0, num=steps)
     y = a*x**2 + b*x + c
@@ -29,8 +29,7 @@ def N_T(a, b, c, start, stop, steps):
     return [y, roots]
 
 def fig_1a(): 
-    """ Generates figure 1a of the paper 
-    """
+    """ Generate figure 1a of the paper."""
     # Data
     lbda = -0.88 # feedback parameter 
     ac = -0.035   # feedback temperature dependence parameter
@@ -44,10 +43,18 @@ def fig_1a():
     
     # Plotting
     fig, ax = plt.subplots()
-    ax.plot(x, linear[0], linestyle = "--", color = "k", label = f"linear, $\Delta T_{{2x}}={linear[1][0]:.1f}K$")
-    ax.plot(x, f_c[0], color = "b", label = f"$a_C = -0.035, \Delta T_{{2x}} = {f_c[1][1]:.1f}K$")
-    ax.plot(x, f_m[0], color = "g", label = f"$a_M = 0.03, \Delta T_{{2x}}= {f_m[1][1]:.1f}K$")
-    ax.plot(x, f_h[0], color = "r", label = r"$a_H=0.058, \Delta T_{{2x}}= ? $")
+    ax.plot(x, linear[0], linestyle = "--", color = "k",
+            label = f"linear, $\Delta T_{{2x}}={linear[1][0]:.1f}K$"
+            )
+    ax.plot(x, f_c[0], color = "b",
+            label = f"$a_C = -0.035, \Delta T_{{2x}} = {f_c[1][1]:.1f}K$"
+            )
+    ax.plot(x, f_m[0], color = "g",
+            label = f"$a_M = 0.03, \Delta T_{{2x}}= {f_m[1][1]:.1f}K$"
+            )
+    ax.plot(x, f_h[0], color = "r",
+            label = r"$a_H=0.058, \Delta T_{{2x}}= ? $"
+            )
     
     # plot slope of lambda
     xmin, xmax = 286.25, 287.75
@@ -81,7 +88,8 @@ def fig_1a():
     # ticks 
     ax.set_xticks([285, 287, 289, 291, 293, 295, 297]) # set ticks 
     ax.axhline(0, color = "k") # add horizontal line at y=0 
-    for xi in [linear[1][-1], f_c[1][-1], f_m[1][-1]]: # add markers at roots on horizontal line 
+    for xi in [linear[1][-1], f_c[1][-1], f_m[1][-1]]: # add markers at roots 
+                                                       # on horizontal line 
         ax.plot([xi + T0, xi + T0], [-0.15, 0.15], color='k')
         ax.plot([287, 287], [-0.15, 0.15], color = "k")
 
@@ -99,8 +107,7 @@ def fig_1a():
 
 # figure 1d
 def fig_1d():
-    """ generates figure 1d from the paper 
-    """
+    """ generate figure 1d from the paper."""
     # data 
     lbda = -1.28 # feedback parameter
     a_h = 0.058 # feedback temperature difference parameter
@@ -117,10 +124,18 @@ def fig_1d():
     
     # plotting
     fig, ax = plt.subplots()
-    ax.plot(x, lin_2x[0], linestyle = "--", color = "b", label = f"$2xCO_2\ (linear), \Delta T_{{2x}}={lin_2x[1][-1]:.1f}K$")
-    ax.plot(x, quad_2x[0], linestyle = "-", color = "b", label = f"$2xCO_2\ (quad), \Delta T_{{2x}}={quad_2x[1][-1]:.1f}K$")
-    ax.plot(x, lin_4x[0], linestyle = "--", color = "r", label = f"$4xCO_2\ (linear), \Delta T_{{4x}}={lin_4x[1][-1]:.1f}K$")
-    ax.plot(x, quad_4x[0], linestyle = "-", color = "r", label = r"$4xCO_2\ (quad), \Delta T_{{4x}}= ? $")
+    ax.plot(x, lin_2x[0], linestyle = "--", color = "b",
+            label = f"$2xCO_2\ (linear), \Delta T_{{2x}}={lin_2x[1][-1]:.1f}K$"
+            )
+    ax.plot(x, quad_2x[0], linestyle = "-", color = "b",
+            label = f"$2xCO_2\ (quad), \Delta T_{{2x}}={quad_2x[1][-1]:.1f}K$"
+            )
+    ax.plot(x, lin_4x[0], linestyle = "--", color = "r",
+            label = f"$4xCO_2\ (linear), \Delta T_{{4x}}={lin_4x[1][-1]:.1f}K$"
+            )
+    ax.plot(x, quad_4x[0], linestyle = "-", color = "r",
+            label = r"$4xCO_2\ (quad), \Delta T_{{4x}}= ? $"
+            )
     ax.plot(x, linF1[0], linestyle = "--", color = "k")
     ax.plot(x, quadF1[0], linestyle = "-", color = "k")
     ax.plot(x, linF2[0], linestyle = "--", color = "k")
@@ -187,8 +202,7 @@ def delta_T_vs_a(lbda, n):
 
 # figure 2a
 def fig_2a():
-    """ generates figure 2a from the paper
-    """
+    """ generate figure 2a from the paper."""
     # data 
     x = np.linspace(-0.1, 0.1, 400)
     delta_T_2x_vs_a_max = delta_T_vs_a(-0.79, 2)
@@ -198,10 +212,18 @@ def fig_2a():
     
     # plotting 
     fig, ax = plt.subplots()
-    ax.plot(x, delta_T_2x_vs_a_0, color="k", label=r"$\lambda = 0\ W/m^2/K$")
-    ax.plot(x, delta_T_2x_vs_a_max, color="m", label=r"$\lambda_{max} = -0.79$")
-    ax.plot(x, delta_T_2x_vs_a_mean, color="g", label=r"$\lambda_{mean} = -1.17$")
-    ax.plot(x, delta_T_2x_vs_a_min, color="C1", label=r"$\lambda_{min} = -1.78$")
+    ax.plot(x, delta_T_2x_vs_a_0, color="k",
+            label=r"$\lambda = 0\ W/m^2/K$"
+            )
+    ax.plot(x, delta_T_2x_vs_a_max, color="m",
+            label=r"$\lambda_{max} = -0.79$"
+            )
+    ax.plot(x, delta_T_2x_vs_a_mean, color="g",
+            label=r"$\lambda_{mean} = -1.17$"
+            )
+    ax.plot(x, delta_T_2x_vs_a_min, color="C1",
+            label=r"$\lambda_{min} = -1.78$"
+            )
     
     # limits
     ax.set_ylim(0, 10)
@@ -226,8 +248,7 @@ def fig_2a():
 
 # figure 2b 
 def fig_2b():
-    """ generates figure 2b from the paper 
-    """
+    """ generate figure 2b from the paper.""" 
     # data 
     x = np.linspace(-0.1, 0.1, 400)
     delta_T_4x_vs_a_max = delta_T_vs_a(-0.79, 4)
@@ -237,10 +258,18 @@ def fig_2b():
     
     # plotting 
     fig, ax = plt.subplots()
-    ax.plot(x, delta_T_4x_vs_a_0, color="k", label=r"$\lambda = 0\ W/m^2/K$")
-    ax.plot(x, delta_T_4x_vs_a_max, color="m", label=r"$\lambda_{max} = -0.79$")
-    ax.plot(x, delta_T_4x_vs_a_mean, color="g", label=r"$\lambda_{mean} = -1.17$")
-    ax.plot(x, delta_T_4x_vs_a_min, color="C1", label=r"$\lambda_{min} = -1.78$")
+    ax.plot(x, delta_T_4x_vs_a_0, color="k",
+            label=r"$\lambda = 0\ W/m^2/K$"
+            )
+    ax.plot(x, delta_T_4x_vs_a_max, color="m",
+            label=r"$\lambda_{max} = -0.79$"
+            )
+    ax.plot(x, delta_T_4x_vs_a_mean, color="g",
+            label=r"$\lambda_{mean} = -1.17$"
+            )
+    ax.plot(x, delta_T_4x_vs_a_min, color="C1",
+            label=r"$\lambda_{min} = -1.78$"
+            )
     
     # limits
     ax.set_ylim(0, 20)
@@ -296,70 +325,60 @@ def dT_basic(t, T, alpha, lbda, F):
 
 
 def plot_transient_behaviour():
-    # Solve ODE
-    sol_F2x_lbda1_alphac = solve_ivp(
-        fun=lambda t, T: dT_basic(t, T, alpha=-0.035, lbda=-0.88, F=Fnx(2)),
-        t_span=t_tot, 
-        y0=[Delta_T_0],
-        t_eval=np.linspace(*t_tot, 20000)
-    )
-    sol_F2x_lbda1_alpham = solve_ivp(
-        fun=lambda t, T: dT_basic(t, T, alpha=0.03, lbda=-0.88, F=Fnx(2)),
-        t_span=t_tot, 
-        y0=[Delta_T_0],
-        t_eval=np.linspace(*t_tot, 20000)
-    )
-    sol_F2x_lbda1_alphah = solve_ivp(
-        fun=lambda t, T: dT_basic(t, T, alpha=0.058, lbda=-0.88, F=Fnx(2)),
-        t_span=t_tot, 
-        y0=[Delta_T_0],
-        t_eval=np.linspace(*t_tot, 20000)
-    )
-    sol_F2x_lbda2_alphah = solve_ivp(
-        fun=lambda t, T: dT_basic(t, T, alpha=.058, lbda=-1.28, F=Fnx(2)),
-        t_span=t_tot, 
-        y0=[Delta_T_0],
-        t_eval=np.linspace(*t_tot, 20000)
-    )
-    sol_F4x_lbda2_alphah = solve_ivp(
-        fun=lambda t, T: dT_basic(t, T, alpha=.058, lbda=-1.28, F=Fnx(4)),
-        t_span=t_tot, 
-        y0=[Delta_T_0],
-        t_eval=np.linspace(*t_tot, 20000)
-    )
-    
-    # Plotting 
-    fig, ax = plt.subplots()
+    # Create figure with 1 row and 2 columns of subplots
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(14, 6))
     divider = 365 * 24 * 60 * 60
-    ax.plot(sol_F2x_lbda1_alphac.t / divider,
-            sol_F2x_lbda1_alphac.y[0],
-            label=r"$2xCO_2,\ \lambda = -0.88,\ a_C = -0.035$"
-            )
-    ax.plot(sol_F2x_lbda1_alpham.t / divider,
-            sol_F2x_lbda1_alpham.y[0],
-            label=r"$2xCO_2,\ \lambda = -0.88,\ a_M = 0.03$"
-            )
-    ax.plot(sol_F2x_lbda1_alphah.t / divider,
-            sol_F2x_lbda1_alphah.y[0],
-            label=r"$2xCO_2,\ \lambda = -0.88,\ a_H = 0.058$"
-            )
-    ax.plot(sol_F2x_lbda2_alphah.t / divider,
-            sol_F2x_lbda2_alphah.y[0],
-            label=r"$2xCO_2,\ \lambda = -1.28,\ a_H = 0.058$"
-            )
-    ax.plot(sol_F4x_lbda2_alphah.t / divider,
-            sol_F4x_lbda2_alphah.y[0],
-            label=r"$4xCO_2,\ \lambda = -1.28,\ a_H = 0.058$")
     
+    # plot on first subplot (2x CO2)
+    lbda_values = [-0.79, -1.17, -1.78]
+    a_values = [-0.035, 0.03, 0.058]
+    
+    for lbda in lbda_values:
+        for a in a_values:
+            sol = solve_ivp(fun=lambda t, T: dT_basic(t, T, a, lbda, Fnx(2)),
+                            t_span=t_tot, y0=[Delta_T_0],
+                            t_eval=np.linspace(*t_tot, 20000)
+                            )
+            ax1.plot(sol.t / divider, sol.y[0],
+                     label=f"$\lambda = {lbda}, a = {a}$"
+                     )
+            
     # Labels
-    ax.set_xlabel("Time (years)")
-    ax.set_ylabel("Temperature change (K)")
-    #ax.set_title("Time series of global annual mean surface temperature increase")
+    ax1.set_xlabel("Time (years)")
+    ax1.set_ylabel("Temperature change (K)")
+    ax1.set_title(r"$2xCO_2$")
     
-    # legend
-    ax.legend()
+    # Move legend outside the plot area
+    ax1.legend(bbox_to_anchor=(1.05, 1), loc='upper left', fontsize=8)
+    
+    
+    # plot on second subplot (4x CO2)
+    for lbda in lbda_values:
+        for a in a_values:
+            sol = solve_ivp(fun=lambda t, T: dT_basic(t, T, a, lbda, Fnx(4)),
+                            t_span=t_tot, y0=[Delta_T_0],
+                            t_eval=np.linspace(*t_tot, 20000)
+                            )
+            # Check if solution is valid
+            if sol.success:
+                ax2.plot(sol.t / divider, sol.y[0],
+                         label=f"$\lambda = {lbda}, a = {a}$"
+                         )
+                print(f"λ={lbda}, a={a}: max temp = {sol.y[0].max():.2e}")
+            else:
+                print(f"λ={lbda}, a={a}: Integration failed")
+                 
+    # Labels
+    ax2.set_xlabel("Time (years)")
+    ax2.set_ylabel("Temperature change (K)")
+    ax2.set_title(r"$4xCO_2$")
+    
+    # Move legend outside the plot area
+    ax2.legend(bbox_to_anchor=(1.05, 1), loc='upper left', fontsize=8)
+    
     
     plt.tight_layout()
+    plt.subplots_adjust(right=0.85)  # Make room for legends
     plt.show()
     
 
