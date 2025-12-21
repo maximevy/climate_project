@@ -326,21 +326,23 @@ def dT_basic(t, T, alpha, lbda, F):
 
 def plot_transient_behaviour():
     # Create figure with 1 row and 2 columns of subplots
-    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(14, 6))
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(15, 6))
     divider = 365 * 24 * 60 * 60
     
     # plot on first subplot (2x CO2)
     lbda_values = [-0.79, -1.17, -1.78]
+    lbda_names = [r"$\lambda_{max}$", r"$\lambda_{mean}$", r"$\lambda_{min}$"]
     a_values = [-0.035, 0.03, 0.058]
+    a_names = [r"$a_C$", r"$a_M$", r"$a_H$"]
     
-    for lbda in lbda_values:
-        for a in a_values:
+    for index_lbda, lbda in enumerate(lbda_values):
+        for index_a, a in enumerate(a_values):
             sol = solve_ivp(fun=lambda t, T: dT_basic(t, T, a, lbda, Fnx(2)),
                             t_span=t_tot, y0=[Delta_T_0],
                             t_eval=np.linspace(*t_tot, 20000)
                             )
             ax1.plot(sol.t / divider, sol.y[0],
-                     label=f"$\lambda = {lbda}, a = {a}$"
+                     label=f"{lbda_names[index_lbda]} = {lbda}, {a_names[index_a]} = {a}"
                      )
             
     # Labels
@@ -353,8 +355,8 @@ def plot_transient_behaviour():
     
     
     # plot on second subplot (4x CO2)
-    for lbda in lbda_values:
-        for a in a_values:
+    for index_lbda, lbda in enumerate(lbda_values):
+        for index_a, a in enumerate(a_values):
             sol = solve_ivp(fun=lambda t, T: dT_basic(t, T, a, lbda, Fnx(4)),
                             t_span=t_tot, y0=[Delta_T_0],
                             t_eval=np.linspace(*t_tot, 20000)
@@ -362,7 +364,7 @@ def plot_transient_behaviour():
             # Check if solution is valid
             if sol.success:
                 ax2.plot(sol.t / divider, sol.y[0],
-                         label=f"$\lambda = {lbda}, a = {a}$"
+                         label=f"{lbda_names[index_lbda]} = {lbda}, {a_names[index_a]} = {a}"
                          )
                 print(f"λ={lbda}, a={a}: max temp = {sol.y[0].max():.2e}")
             else:
@@ -379,6 +381,7 @@ def plot_transient_behaviour():
     
     plt.tight_layout()
     plt.subplots_adjust(right=0.85)  # Make room for legends
+    plt.savefig(fname="graphs/part1/transient_behaviour.pdf")
     plt.show()
     
 
