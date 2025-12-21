@@ -5,7 +5,7 @@ import random
 
 plt.close('all')
 
-t_year = 200 #total time of experiment [years]
+t_year = 2000 #total time of experiment [years]
 t_sec = t_year*365*24*60*60 
 t_tot = (0, t_sec) 
 
@@ -145,7 +145,7 @@ def dT_stoch_plot20():
     while i < 20:
         sol2 = solve_ivp(fun = dT_stoch, t_span = t_tot, y0 = [T0], t_eval = np.linspace(*t_tot, 20000))
         plt.plot(sol2.t/(365*24*60*60), sol2.y[0])
-        plt.title(f"20 Time series of the increase in global annual mean surface temperature with a forcing of F = {F}")
+        # plt.title(f"20 Time series of the increase in global annual mean surface temperature with a forcing of F = {F}")
         plt.xlabel("Time [years]")
         plt.ylabel("Temperature increase [K]")
         i += 1
