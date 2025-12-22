@@ -326,7 +326,7 @@ def dT_basic(t, T, alpha, lbda, F):
 
 def plot_transient_behaviour():
     # Create figure with 1 row and 2 columns of subplots
-    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(15, 6))
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(14, 6))
     divider = 365 * 24 * 60 * 60
     
     # plot on first subplot (2x CO2)
@@ -351,8 +351,8 @@ def plot_transient_behaviour():
     ax1.set_title(r"$2xCO_2$")
     
     # Move legend outside the plot area
-    ax1.legend(bbox_to_anchor=(1.05, 1), loc='upper left', fontsize=8)
-    
+    # ax1.legend(bbox_to_anchor=(1.05, 1), loc='upper left', fontsize=8)
+    ax1.legend()
     
     # plot on second subplot (4x CO2)
     for index_lbda, lbda in enumerate(lbda_values):
@@ -376,11 +376,11 @@ def plot_transient_behaviour():
     ax2.set_title(r"$4xCO_2$")
     
     # Move legend outside the plot area
-    ax2.legend(bbox_to_anchor=(1.05, 1), loc='upper left', fontsize=8)
-    
+    #ax2.legend(bbox_to_anchor=(1.05, 1), loc='upper left', fontsize=8)
+    ax2.legend()
     
     plt.tight_layout()
-    plt.subplots_adjust(right=0.85)  # Make room for legends
+    plt.subplots_adjust(wspace=0.15)
     plt.savefig(fname="graphs/part1/transient_behaviour.pdf")
     plt.show()
     
